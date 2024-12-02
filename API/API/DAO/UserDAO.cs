@@ -75,5 +75,33 @@ namespace API.DAO
             return user;
         }
 
+        public bool CreateUser(User user)
+        {
+            // Hacher le mot de passe avec SHA-256
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                var passwordBytes = System.Text.Encoding.UTF8.GetBytes(user.Password);
+                var hashedBytes = sha256.ComputeHash(passwordBytes);
+                var hashedPassword = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(
+                        "INSERT INTO [User] (first_name, last_name, login, password) VALUES (@FirstName, @LastName, @Login, @Password)",
+                        conn
+                    );
+
+                    cmd.Parameters.AddWithValue("@FirstName", user.FirstName);
+                    cmd.Parameters.AddWithValue("@LastName", user.LastName);
+                    cmd.Parameters.AddWithValue("@Login", user.Login);
+                    cmd.Parameters.AddWithValue("@Password", hashedPassword);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
     }
 }

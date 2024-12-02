@@ -170,6 +170,53 @@ namespace API.Controllers
             }
         }
 
+        [HttpGet("month/{month}")]
+        public ActionResult<List<ReservationDto>> GetReservationsByMonth(DateTime month)
+        {
+            try
+            {
+                var reservations = _reservationDAO.GetReservationsByMonth(month);
+
+                if (!reservations.Any())
+                {
+                    return NotFound($"Aucune réservation trouvée pour le mois {month:yyyy-MM}.");
+                }
+
+                var reservationDtos = reservations
+                    .Select(ReservationMapper.ReservationToDto)
+                    .ToList();
+
+                return Ok(reservationDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Une erreur est survenue : {ex.Message}");
+            }
+        }
+
+        [HttpGet("user/{userId}/month/{month}")]
+        public ActionResult<List<ReservationDto>> GetReservationsByUserByMonth(int userId, DateTime month)
+        {
+            try
+            {
+                var reservations = _reservationDAO.GetReservationsByUserByMonth(userId, month);
+
+                if (!reservations.Any())
+                {
+                    return NotFound($"Aucune réservation trouvée pour l'utilisateur {userId} pour le mois {month:yyyy-MM}.");
+                }
+
+                var reservationDtos = reservations
+                    .Select(ReservationMapper.ReservationToDto)
+                    .ToList();
+
+                return Ok(reservationDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Une erreur est survenue : {ex.Message}");
+            }
+        }
 
 
 

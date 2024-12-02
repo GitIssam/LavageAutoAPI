@@ -1,6 +1,7 @@
 ﻿using API.DAO;
 using API.DAO.Interface;
 using API.DTO.NewFolder;
+using API.DTO.User;
 using API.Models;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -38,5 +39,37 @@ namespace API.Controllers
 
             return Ok(user);
         }
+
+        [HttpPost("create")]
+        public ActionResult CreateUser([FromBody] CreateUserDTO userDto)
+        {
+            try
+            {
+                // Mapper le DTO en modèle User
+                var user = new User
+                {
+                    FirstName = userDto.FirstName,
+                    LastName = userDto.LastName,
+                    Login = userDto.Login,
+                    Password = userDto.Password
+                };
+
+                var isCreated = _userDAO.CreateUser(user);
+
+                if (isCreated)
+                {
+                    return CreatedAtAction(nameof(CreateUser), new { login = userDto.Login }, null);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Impossible de créer l'utilisateur.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Une erreur est survenue : {ex.Message}");
+            }
+        }
+
     }
 }

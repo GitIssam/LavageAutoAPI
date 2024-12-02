@@ -186,6 +186,85 @@ namespace API.DAO
             return reservations;
         }
 
+        public List<Reservation> GetReservationsByMonth(DateTime month)
+        {
+            var reservations = new List<Reservation>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT id, date, client_name, client_email, client_phone, car_type, reserved_at, slot_id, user_id, reservation_type_id " +
+                    "FROM Reservation " +
+                    "WHERE YEAR(date) = @Year AND MONTH(date) = @Month", conn);
+
+                cmd.Parameters.AddWithValue("@Year", month.Year);
+                cmd.Parameters.AddWithValue("@Month", month.Month);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        reservations.Add(new Reservation
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("id")),
+                            Date = reader.GetDateTime(reader.GetOrdinal("date")),
+                            ClientName = reader.IsDBNull(reader.GetOrdinal("client_name")) ? null : reader.GetString(reader.GetOrdinal("client_name")),
+                            ClientEmail = reader.IsDBNull(reader.GetOrdinal("client_email")) ? null : reader.GetString(reader.GetOrdinal("client_email")),
+                            ClientPhone = reader.IsDBNull(reader.GetOrdinal("client_phone")) ? null : reader.GetString(reader.GetOrdinal("client_phone")),
+                            CarType = reader.IsDBNull(reader.GetOrdinal("car_type")) ? null : reader.GetString(reader.GetOrdinal("car_type")),
+                            ReservedAt = reader.GetDateTime(reader.GetOrdinal("reserved_at")),
+                            SlotId = reader.GetInt32(reader.GetOrdinal("slot_id")),
+                            UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
+                            ReservationTypeId = reader.GetInt32(reader.GetOrdinal("reservation_type_id"))
+                        });
+                    }
+                }
+            }
+
+            return reservations;
+        }
+
+        public List<Reservation> GetReservationsByUserByMonth(int userId, DateTime month)
+        {
+            var reservations = new List<Reservation>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(
+                    "SELECT id, date, client_name, client_email, client_phone, car_type, reserved_at, slot_id, user_id, reservation_type_id " +
+                    "FROM Reservation " +
+                    "WHERE user_id = @UserId AND YEAR(date) = @Year AND MONTH(date) = @Month", conn);
+
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                cmd.Parameters.AddWithValue("@Year", month.Year);
+                cmd.Parameters.AddWithValue("@Month", month.Month);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        reservations.Add(new Reservation
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("id")),
+                            Date = reader.GetDateTime(reader.GetOrdinal("date")),
+                            ClientName = reader.IsDBNull(reader.GetOrdinal("client_name")) ? null : reader.GetString(reader.GetOrdinal("client_name")),
+                            ClientEmail = reader.IsDBNull(reader.GetOrdinal("client_email")) ? null : reader.GetString(reader.GetOrdinal("client_email")),
+                            ClientPhone = reader.IsDBNull(reader.GetOrdinal("client_phone")) ? null : reader.GetString(reader.GetOrdinal("client_phone")),
+                            CarType = reader.IsDBNull(reader.GetOrdinal("car_type")) ? null : reader.GetString(reader.GetOrdinal("car_type")),
+                            ReservedAt = reader.GetDateTime(reader.GetOrdinal("reserved_at")),
+                            SlotId = reader.GetInt32(reader.GetOrdinal("slot_id")),
+                            UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
+                            ReservationTypeId = reader.GetInt32(reader.GetOrdinal("reservation_type_id"))
+                        });
+                    }
+                }
+            }
+
+            return reservations;
+        }
+
 
         public List<Reservation> GetReservationsByUserByDay(DateTime date, int? userId)
         {

@@ -24,5 +24,10 @@ namespace API.DAO.Interface
         List<Reservation> GetReservationsByUserByDay(DateTime date, int? userId);
 
         List<Reservation> GetReservationsByDay(DateTime date);
+
+        List<Reservation> GetReservationsByMonth(DateTime month);
+
+        List<Reservation> GetReservationsByUserByMonth(int userId, DateTime month);
+
     }
 }
